@@ -1,0 +1,20 @@
+# Daily read from the Rhyme Clash database so the free Supabase project never pauses for inactivity.
+# Uses the publishable (public) key only. Fails loudly if the project is down.
+name: supabase-keepalive
+on:
+  schedule:
+    - cron: "17 3 * * *"   # 03:17 UTC daily
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read one row
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" --retry 3 --max-time 30 \
+            "https://dclzdyjjokkrhpgvfoar.supabase.co/rest/v1/app_config?select=key&limit=1" \
+            -H "apikey: sb_publishable_bgztjkBh4MpgnBJFxMZkbg_EoaPBViE")
+          echo "HTTP $code"
+          [ "$code" = "200" ]
