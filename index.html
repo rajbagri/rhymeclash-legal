@@ -1,1 +1,343 @@
-<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=privacy/"><a href="privacy/">Rhyme Clash</a>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rhyme Clash: Rap Battle Word Game</title>
+<meta name="description" content="Head-to-head rap battle word game. Every rhyme you type is an attack. Chain combos, land rare multi-syllable rhymes and climb the ranked ladder. Free on iPhone and iPad.">
+<meta name="theme-color" content="#0A0A0C">
+<meta name="color-scheme" content="dark">
+<meta name="apple-itunes-app" content="app-id=6836492932">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rhyme Clash: Rhyme fast. Hit hard.">
+<meta property="og:description" content="Every rhyme you type is an attack. Free rap battle word game for iPhone and iPad.">
+<meta property="og:image" content="https://rajbagri.github.io/rhymeclash-legal/assets/og.jpg">
+<meta property="og:url" content="https://rajbagri.github.io/rhymeclash-legal/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" href="assets/apple-touch-icon.png">
+<link rel="preload" as="image" href="assets/shot-01.jpg">
+<style>
+:root{
+  --bg:#0A0A0C;--panel:#16171B;--edge:rgba(255,255,255,.08);
+  --text:#fff;--text2:rgba(255,255,255,.75);--text3:rgba(255,255,255,.58);
+  --cyan:#22E5FF;--magenta:#FF2BD6;--gold:#FFC83D;--lime:#B6FF3B;--rival:#FF4D7A;
+  --display:"Avenir Next Condensed","AvenirNextCondensed-Heavy","Roboto Condensed","Arial Narrow",sans-serif-condensed,Impact,system-ui,sans-serif;
+  --body:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:16px/1.5 var(--body);overflow-x:hidden;
+  padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+a{color:inherit}
+img{display:block;max-width:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.display{font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.01em;line-height:.92}
+
+/* Stage backdrop: magenta glow + receding grid floor */
+.stage{position:relative;isolation:isolate;overflow:hidden}
+.stage::before{content:"";position:absolute;inset:-20% -30% auto;height:120%;z-index:-2;
+  background:radial-gradient(60% 50% at 50% 20%,rgba(255,43,214,.38),transparent 70%),
+             radial-gradient(40% 35% at 85% 60%,rgba(34,229,255,.16),transparent 70%)}
+.stage::after{content:"";position:absolute;left:-50%;right:-50%;bottom:0;height:46%;z-index:-1;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,43,214,.35) 0 1px,transparent 1px 64px),
+    repeating-linear-gradient(0deg,rgba(255,43,214,.35) 0 1px,transparent 1px 44px);
+  transform:perspective(320px) rotateX(62deg);transform-origin:50% 100%;
+  -webkit-mask-image:linear-gradient(to top,#000 10%,transparent 85%);mask-image:linear-gradient(to top,#000 10%,transparent 85%)}
+
+header.top{display:flex;align-items:center;gap:10px;padding:18px 0}
+header.top img{width:40px;height:40px;border-radius:10px;box-shadow:0 0 0 1px var(--edge)}
+header.top span{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em}
+
+.hero{display:grid;gap:28px;padding:12px 0 56px;align-items:center}
+.hero h1{font-size:clamp(64px,17vw,132px)}
+.hero h1 .hit{display:block;background:linear-gradient(180deg,#fff 0%,#ffc4f3 35%,var(--magenta) 80%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 22px rgba(255,43,214,.55))}
+.hero p.lede{margin-top:18px;font-size:19px;color:var(--text2);max-width:30em}
+.meta{margin-top:12px;font-size:14px;color:var(--text3)}
+
+.cta{display:inline-flex;align-items:center;gap:12px;margin-top:26px;padding:16px 26px;border-radius:16px;
+  background:var(--magenta);color:#14000f;text-decoration:none;font-family:var(--display);font-weight:800;
+  font-size:24px;letter-spacing:.03em;text-transform:uppercase;
+  box-shadow:0 0 0 2px rgba(255,255,255,.12) inset,0 10px 40px -8px rgba(255,43,214,.75);
+  transition:transform .15s ease,box-shadow .15s ease}
+.cta:hover{transform:translateY(-2px);box-shadow:0 0 0 2px rgba(255,255,255,.2) inset,0 14px 48px -8px rgba(255,43,214,.9)}
+.cta:active{transform:translateY(1px)}
+.cta:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.cta svg{width:26px;height:26px;flex:none}
+.cta small{display:block;font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:0;text-transform:none;opacity:.75;line-height:1.1}
+.cta .lbl{display:flex;flex-direction:column;line-height:1}
+
+/* Live battle demo */
+.demo{position:relative;margin:0 auto;width:min(100%,380px);padding:22px 18px 18px;border-radius:28px;
+  background:linear-gradient(180deg,rgba(30,32,38,.92),rgba(14,15,18,.96));
+  box-shadow:0 0 0 1px var(--edge),0 0 60px -10px rgba(255,43,214,.45),0 30px 60px -20px #000}
+.hp{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.04em}
+.hp .side{display:flex;flex-direction:column;gap:6px}
+.hp .side.r{text-align:right}
+.bar{height:8px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;border-radius:inherit;transition:width .35s ease}
+.you .bar i{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.riv .bar i{background:var(--rival);box-shadow:0 0 10px var(--rival);margin-left:auto}
+.timer{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:20px;
+  box-shadow:0 0 0 3px var(--rival) inset;color:#fff}
+.prompt{margin:22px 0 4px;text-align:center}
+.prompt small{display:block;font-size:11px;letter-spacing:.18em;color:var(--text3);font-weight:700}
+.prompt b{display:block;font-family:var(--display);font-weight:800;font-size:64px;line-height:1;letter-spacing:.02em;
+  color:#dffbff;text-shadow:0 0 18px rgba(34,229,255,.7)}
+.twist{display:table;margin:8px auto 0;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.14em;
+  color:var(--ember,#FF7A1A);box-shadow:0 0 0 1px rgba(255,122,26,.6) inset}
+.typed{margin:16px auto 10px;height:46px;border-radius:12px;display:flex;align-items:center;gap:2px;padding:0 14px;
+  background:rgba(255,255,255,.05);box-shadow:0 0 0 1px var(--edge) inset;font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.06em}
+.caret{width:2px;height:24px;background:var(--cyan);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.hits{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:148px;align-content:start}
+.hit-row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 12px;border-radius:10px;
+  background:rgba(255,255,255,.04);box-shadow:0 0 0 1px var(--edge) inset;animation:pop .35s cubic-bezier(.2,1.4,.4,1) both}
+.hit-row b{font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:.04em}
+.hit-row em{font-style:normal;font-family:var(--display);font-weight:800;font-size:16px}
+.hit-row small{display:block;font-size:9px;letter-spacing:.14em;font-weight:800;color:var(--text3)}
+.hit-row.perfect b,.hit-row.perfect em{color:var(--cyan)}
+.hit-row.multi b,.hit-row.multi em{color:var(--magenta)}
+.hit-row.rare b,.hit-row.rare em{color:var(--gold)}
+.hit-row.big{grid-column:1/-1;box-shadow:0 0 0 1px rgba(255,200,61,.55) inset,0 0 24px -6px rgba(255,200,61,.6)}
+.hit-row.rival{opacity:.8}
+.hit-row.rival b,.hit-row.rival em{color:var(--rival)}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.chain{position:absolute;top:84px;left:18px;font-family:var(--display);font-weight:800;font-size:14px;color:var(--lime);
+  letter-spacing:.06em;opacity:0;transition:opacity .2s}
+.chain.on{opacity:1}
+
+section{padding:64px 0}
+.kicker{font-size:12px;font-weight:800;letter-spacing:.2em;color:var(--magenta);text-transform:uppercase}
+h2.display{font-size:clamp(40px,9vw,64px);margin-top:8px}
+
+.rules{display:grid;gap:12px;margin-top:28px}
+.rule{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;padding:18px;border-radius:18px;background:var(--panel);box-shadow:0 0 0 1px var(--edge) inset}
+.rule .dmg{font-family:var(--display);font-weight:800;font-size:34px;min-width:72px;text-align:center}
+.rule h3{font-family:var(--display);font-weight:800;font-size:24px;text-transform:uppercase;letter-spacing:.03em;line-height:1}
+.rule p{color:var(--text2);margin-top:4px;font-size:15px}
+.c-cyan{color:var(--cyan)}.c-mag{color:var(--magenta)}.c-gold{color:var(--gold)}.c-lime{color:var(--lime)}
+
+.gallery{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:28px 20px 12px;margin:0 -20px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.gallery::-webkit-scrollbar{display:none}
+.gallery img{flex:none;width:min(62vw,260px);aspect-ratio:1320/2868;height:auto;border-radius:22px;scroll-snap-align:center;
+  box-shadow:0 0 0 1px var(--edge),0 20px 40px -20px #000;background:var(--panel)}
+
+.modes{display:grid;gap:12px;margin-top:28px}
+.mode{padding:20px;border-radius:18px;background:var(--panel);box-shadow:0 0 0 1px var(--edge) inset;position:relative;overflow:hidden}
+.mode::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--accent)}
+.mode h3{font-family:var(--display);font-weight:800;font-size:26px;text-transform:uppercase;letter-spacing:.03em;line-height:1;color:var(--accent)}
+.mode p{color:var(--text2);margin-top:6px;font-size:15px}
+
+.final{text-align:center;padding:72px 0 56px}
+.final h2{font-size:clamp(48px,12vw,96px)}
+.final p{color:var(--text2);margin-top:12px}
+
+footer{border-top:1px solid var(--edge);padding:28px 0 36px;color:var(--text3);font-size:13px}
+footer nav{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+footer a{text-decoration:none;color:var(--text2)}
+footer a:hover{color:#fff}
+
+/* Sticky download bar (mobile) */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:rgba(10,10,12,.82);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--edge);
+  display:flex;align-items:center;gap:12px;transform:translateY(110%);transition:transform .3s ease}
+.dock.show{transform:none}
+.dock img{width:44px;height:44px;border-radius:11px}
+.dock div{flex:1;min-width:0}
+.dock b{display:block;font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+.dock span{font-size:12px;color:var(--text3)}
+.dock .cta{margin:0;padding:12px 18px;font-size:19px;border-radius:12px}
+
+.note{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;font-size:14px;color:var(--text2);background:var(--panel);box-shadow:0 0 0 1px var(--edge) inset}
+.android .note{display:block}
+
+@media (min-width:860px){
+  body{padding-bottom:0}
+  .dock{display:none}
+  .hero{grid-template-columns:1.1fr .9fr;padding:28px 0 88px}
+  .rules{grid-template-columns:1fr 1fr}
+  .modes{grid-template-columns:repeat(4,1fr)}
+  .gallery{justify-content:center;flex-wrap:nowrap}
+  .gallery img{width:220px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="wrap">
+    <header class="top">
+      <img src="assets/icon-256.png" alt="" width="40" height="40">
+      <span>RHYME CLASH</span>
+    </header>
+
+    <div class="hero">
+      <div>
+        <h1 class="display">Rhyme fast.<span class="hit">Hit hard!</span></h1>
+        <p class="lede">A head-to-head rap battle word game. You get a word and a few seconds. Every rhyme you type hits your rival.</p>
+        <a class="cta js-store" href="https://apps.apple.com/app/id6836492932" id="heroCta">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c.02 2.5 2.2 3.33 2.22 3.34-.02.06-.35 1.19-1.15 2.36-.69 1.01-1.41 2.02-2.54 2.04-1.11.02-1.47-.66-2.74-.66s-1.67.64-2.72.68c-1.09.04-1.92-1.09-2.62-2.1-1.42-2.06-2.51-5.82-1.05-8.36.72-1.26 2.02-2.06 3.43-2.08 1.07-.02 2.08.72 2.74.72.65 0 1.88-.89 3.17-.76.54.02 2.06.22 3.04 1.65-.08.05-1.81 1.06-1.79 3.17M14.29 4.68c.58-.7.97-1.68.86-2.65-.83.03-1.84.55-2.44 1.25-.54.62-1.01 1.61-.88 2.56.93.07 1.87-.47 2.46-1.16"/></svg>
+          <span class="lbl">Get it free<small>on the App Store</small></span>
+        </a>
+        <p class="meta">Free · iPhone &amp; iPad · Optional in-app purchases</p>
+        <p class="note">Rhyme Clash is on iPhone and iPad only for now.</p>
+      </div>
+
+      <div class="demo" aria-label="Animated example of a Rhyme Clash round" role="img">
+        <div class="hp">
+          <div class="side you"><span>YOU</span><div class="bar"><i id="hpYou"></i></div></div>
+          <div class="timer" id="timer">9</div>
+          <div class="side r riv"><span>HOUSE MC</span><div class="bar"><i id="hpRiv"></i></div></div>
+        </div>
+        <div class="chain" id="chain">×2 CHAIN</div>
+        <div class="prompt"><small>RHYME WITH</small><b>STRAYS</b><span class="twist">⚡ DOUBLE DAMAGE</span></div>
+        <div class="typed"><span id="typed"></span><span class="caret"></span></div>
+        <div class="hits" id="hits"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">How it works</div>
+    <h2 class="display">Every rhyme is an attack</h2>
+    <div class="rules">
+      <div class="rule"><div class="dmg c-cyan">-8</div><div><h3 class="c-cyan">Perfect rhymes hit</h3><p>Days, phrase, raise. Land a clean rhyme and it lands on your rival.</p></div></div>
+      <div class="rule"><div class="dmg c-mag">-14</div><div><h3 class="c-mag">Multi-syllable hits harder</h3><p>Holidays, hallways. Longer rhymes deal more damage.</p></div></div>
+      <div class="rule"><div class="dmg c-gold">★</div><div><h3 class="c-gold">Rare words deal bonus damage</h3><p>Dig deep into your vocabulary. Uncommon words hit extra hard.</p></div></div>
+      <div class="rule"><div class="dmg c-lime">×5</div><div><h3 class="c-lime">Chain combos</h3><p>Fire rhymes back to back to build a chain. New twists each round, like Double Damage and Rare Rush.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:8px">
+  <div class="wrap">
+    <div class="kicker">In the game</div>
+    <h2 class="display">Drain their HP. Win by K.O.</h2>
+    <div class="gallery" id="gallery">
+      <img src="assets/shot-01.jpg" alt="Battle screen: rhyme with Strays, rhymes deal damage" width="1100" height="2390">
+      <img src="assets/shot-02.jpg" alt="K.O. win screen" width="1100" height="2390" loading="lazy">
+      <img src="assets/shot-03.jpg" alt="New twist every round: Double Damage" width="1100" height="2390" loading="lazy">
+      <img src="assets/shot-04.jpg" alt="Ranked ladder: climb to Crown Mic" width="1100" height="2390" loading="lazy">
+      <img src="assets/shot-05.jpg" alt="Ranked leaderboard, every season" width="1100" height="2390" loading="lazy">
+      <img src="assets/shot-06.jpg" alt="Daily Challenge: same words for everyone" width="1100" height="2390" loading="lazy">
+      <img src="assets/shot-07.jpg" alt="Shop: mic skins and cosmetics, never pay to win" width="1100" height="2390" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Game modes</div>
+    <h2 class="display">Pick your stage</h2>
+    <div class="modes">
+      <div class="mode" style="--accent:var(--magenta)"><h3>Ranked</h3><p>Face real players online and climb the tier ladder every season.</p></div>
+      <div class="mode" style="--accent:var(--cyan)"><h3>Friend Battles</h3><p>Share a 6-letter room code and settle it with a friend.</p></div>
+      <div class="mode" style="--accent:var(--gold)"><h3>Daily Challenge</h3><p>A new challenge every day, the same one for everyone.</p></div>
+      <div class="mode" style="--accent:var(--lime)"><h3>Practice</h3><p>Warm up against the House MC, even offline.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="stage">
+  <div class="wrap final">
+    <h2 class="display">Your turn<br>on the mic</h2>
+    <p>Free to play. Cosmetics never change how much damage you deal.</p>
+    <a class="cta js-store" href="https://apps.apple.com/app/id6836492932">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c.02 2.5 2.2 3.33 2.22 3.34-.02.06-.35 1.19-1.15 2.36-.69 1.01-1.41 2.02-2.54 2.04-1.11.02-1.47-.66-2.74-.66s-1.67.64-2.72.68c-1.09.04-1.92-1.09-2.62-2.1-1.42-2.06-2.51-5.82-1.05-8.36.72-1.26 2.02-2.06 3.43-2.08 1.07-.02 2.08.72 2.74.72.65 0 1.88-.89 3.17-.76.54.02 2.06.22 3.04 1.65-.08.05-1.81 1.06-1.79 3.17M14.29 4.68c.58-.7.97-1.68.86-2.65-.83.03-1.84.55-2.44 1.25-.54.62-1.01 1.61-.88 2.56.93.07 1.87-.47 2.46-1.16"/></svg>
+      <span class="lbl">Download free<small>on the App Store</small></span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <nav><a href="privacy/">Privacy Policy</a><a href="support/">Support</a><a href="mailto:rajbagri3214@gmail.com">Contact</a></nav>
+    <p>© 2026 Raj Bagri. This page uses no cookies, trackers or analytics.</p>
+    <p>Apple, iPhone, iPad and App Store are trademarks of Apple Inc.</p>
+  </div>
+</footer>
+
+<div class="dock" id="dock" aria-hidden="true">
+  <img src="assets/icon-256.png" alt="">
+  <div><b>Rhyme Clash</b><span>Rap battle word game · Free</span></div>
+  <a class="cta js-store" href="https://apps.apple.com/app/id6836492932" tabindex="-1">Get</a>
+</div>
+
+<script>
+(function(){
+  // App Store link. A ?ct=<campaign> on this page's URL (e.g. ?ct=ig_reel01) is passed on as an
+  // App Store campaign token, so App Store Connect → Analytics → Sources shows installs per ad.
+  // Nothing is stored or sent anywhere else.
+  var APP = "https://apps.apple.com/app/apple-store/id6836492932";
+  var PT = "";   // App Store Connect provider token (Analytics → Campaigns). Empty = plain link.
+  var q = new URLSearchParams(location.search);
+  var ct = (q.get("ct") || q.get("utm_campaign") || "").replace(/[^\w.-]/g, "").slice(0, 40);
+  var url = APP + (PT ? "?pt=" + PT + "&ct=" + encodeURIComponent(ct || "landing") + "&mt=8" : "");
+  document.querySelectorAll(".js-store").forEach(function(a){ a.href = url; });
+
+  if (/Android/i.test(navigator.userAgent)) document.documentElement.classList.add("android");
+
+  // Sticky download bar once the hero button scrolls away.
+  var dock = document.getElementById("dock"), hero = document.getElementById("heroCta");
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function(e){ dock.classList.toggle("show", !e[0].isIntersecting); }).observe(hero);
+  }
+
+  // Battle demo loop.
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var script = [
+    {w:"DAYS", d:8, t:"perfect", tag:"PERFECT"},
+    {w:"PHRASE", d:8, t:"rival", tag:"HOUSE MC", rival:true},
+    {w:"HOLIDAYS", d:14, t:"multi", tag:"MULTI"},
+    {w:"RAISE", d:8, t:"perfect", tag:"PERFECT"},
+    {w:"HALLWAYS ★", d:18, t:"rare big", tag:"MULTI · RARE"}
+  ];
+  var hits = document.getElementById("hits"), typed = document.getElementById("typed"),
+      hpY = document.getElementById("hpYou"), hpR = document.getElementById("hpRiv"),
+      chain = document.getElementById("chain"), timer = document.getElementById("timer");
+  function row(s){
+    var el = document.createElement("div");
+    el.className = "hit-row " + s.t + (s.rival ? " rival" : "");
+    el.innerHTML = "<div><b>" + s.w + "</b><small>" + s.tag + "</small></div><em>-" + s.d + "</em>";
+    hits.appendChild(el);
+  }
+  if (reduce) { script.forEach(row); hpY.style.width = "92%"; hpR.style.width = "52%"; return; }
+  var wait = function(ms){ return new Promise(function(r){ setTimeout(r, ms); }); };
+  async function loop(){
+    for(;;){
+      hits.innerHTML = ""; hpY.style.width = "100%"; hpR.style.width = "100%"; chain.classList.remove("on");
+      var you = 100, riv = 100, streak = 0, sec = 9; timer.textContent = sec;
+      await wait(700);
+      for (var i = 0; i < script.length; i++) {
+        var s = script[i];
+        if (!s.rival) {
+          var word = s.w.replace(" ★", "");
+          for (var k = 1; k <= word.length; k++) { typed.textContent = word.slice(0, k); await wait(70); }
+          await wait(160); typed.textContent = "";
+          riv -= s.d * 1.0; hpR.style.width = Math.max(riv, 4) + "%";
+          streak++; if (streak >= 2) { chain.textContent = "×" + streak + " CHAIN"; chain.classList.add("on"); }
+        } else {
+          await wait(300); you -= s.d; hpY.style.width = you + "%";
+        }
+        row(s);
+        timer.textContent = Math.max(--sec, 1);
+        await wait(650);
+      }
+      await wait(2600);
+    }
+  }
+  loop();
+})();
+</script>
+</body>
+</html>
